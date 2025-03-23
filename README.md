@@ -128,4 +128,8 @@ Official Raspberry Pi Pico website: https://www.raspberrypi.org/products/raspber
 
 MicroPython documentation: https://docs.micropython.org/
 
+<<<<<<< HEAD
 I2C LCD library: https://github.com/dhylands/python_lcd
+=======
+I2C LCD library: https://github.com/dhylands/python_lcd
+>>>>>>> 3a74bc307db6dc31d11f6aa9c059b8b2a4236c0d

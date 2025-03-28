@@ -1,135 +1,78 @@
-Project: Statistical Anomaly Zone Detector
-Project Description
-This project is a statistical anomaly zone detector using Raspberry Pi Pico. The main task of the device is to analyze data, generate random numbers, calculate the arithmetic mean, and visualize the results on an LCD screen. The project includes:
+Statistical Anomaly Zone Detector v2.0
 
-Generating random numbers and filling a data array.
+Project Description:
+Advanced statistical anomaly detection device with extended functionality. The main purpose is data analysis, random number generation, arithmetic mean calculation and results visualization on LCD with full statistical analysis capabilities.
 
-Calculating the arithmetic mean and detecting anomalies.
+New Features:
+- Fullscreen statistics mode (activated by double button press)
+- Display of most frequent value range and hit count
+- Frequency analysis of last 1600 values
+- Data split into 16 ranges of 100 values
+- Improved mode indication
 
-Visualizing data on the LCD screen using custom characters.
+Components:
+- Raspberry Pi Pico
+- WS2812 RGB LED
+- 16x2 LCD (I2C)
+- Button
+- Resistors and wires
 
-Indicating the device status using an addressable RGB LED (WS2812).
+Connections:
 
-The device can be used for educational purposes, data processing experiments, and visualizing statistical anomalies.
+RGB LED (WS2812):
+- DIN -> GPIO23 (Pin 29)
+- GND -> GND
+- VCC -> 3.3V
 
-Components
-Raspberry Pi Pico – microcontroller for running the program.
+LCD (I2C):
+- SDA -> GPIO0 (Pin 1)
+- SCL -> GPIO1 (Pin 2)
+- VCC -> 3.3V
+- GND -> GND
 
-Addressable RGB LED (WS2812) – for indicating the device status.
+Button:
+- One pin -> GPIO15 (Pin 20)
+- Second pin -> GND
+- Use internal PULL_UP resistor
 
-LCD screen (16x2, I2C) – for displaying information.
+Installation:
+1. Install latest MicroPython on Raspberry Pi Pico
+2. Copy project files (main.py, lcd_api.py, i2c_lcd.py)
+3. Connect components according to scheme
+4. Run main.py
 
-Button – for resetting the data array.
+Functionality:
 
-Resistors and wires – for connecting components.
+Main Mode:
+- Random number generation and array filling
+- Arithmetic mean calculation
+- Cursor position visualization on scale
+- Anomaly detection (cursor deviation)
+- Color status indication (blue - init, green - ready, purple - filling)
 
-Component Connections
-RGB LED (WS2812)
-DIN pin – connect to GPIO23 (Pin 29) on Raspberry Pi Pico.
+Statistics Mode (double button press):
+- Display of most frequent value range
+- Show hit count for this range
+- Yellow LED indication
 
-GND – connect to GND on Raspberry Pi Pico.
+Data Reset:
+- Single button press resets array
+- Returns to main mode
 
-VCC – connect to 3.3V on Raspberry Pi Pico.
+Configuration:
+- array_size - analysis array size
+- stat_window - statistics window
+- stat_bins - number of ranges
+- bin_size - single range size
 
-LCD Screen (I2C)
-SDA – connect to GPIO0 (Pin 1) on Raspberry Pi Pico.
+Use Cases:
+- Educational statistics projects
+- Random number generation experiments
+- Analytics systems prototyping
 
-SCL – connect to GPIO1 (Pin 2) on Raspberry Pi Pico.
+License:
+MIT License. Free use, modification and distribution.
 
-VCC – connect to 3.3V on Raspberry Pi Pico.
-
-GND – connect to GND on Raspberry Pi Pico.
-
-Button
-One button pin – connect to GPIO15 (Pin 20) on Raspberry Pi Pico.
-
-The other button pin – connect to GND on Raspberry Pi Pico.
-
-Use a pull-up resistor (internal PULL_UP).
-
-Installation and Launch
-Ensure you have the latest version of MicroPython installed on your Raspberry Pi Pico.
-
-Copy the project files (including the libraries lcd_api.py and i2c_lcd.py) to the Raspberry Pi Pico.
-
-Connect the components according to the diagram.
-
-Run the main.py file on the Raspberry Pi Pico.
-
-Program Functionality
-Initialization:
-
-On startup, the LED lights up blue, and the LCD screen displays "Initializing...".
-
-After initialization, the LED changes to green, and a scale with the message "Wait" appears on the screen.
-
-Data Generation:
-
-The program generates random numbers and fills an array with them.
-
-After filling the array, the arithmetic mean is calculated, and the position of the rectangle (cursor) corresponding to this value is displayed on the LCD screen.
-
-Anomaly Detection:
-
-Under normal conditions, the cursor oscillates around the center of the screen, not exceeding one segment to the left or right.
-
-If the cursor deviates from the central zone by 3-4 segments, this indicates a statistical anomaly.
-
-Anomalies are visualized only on the LCD screen using the cursor position.
-
-LED Indicator:
-
-Blue color – device initialization.
-
-Yellow color – issues with the LCD screen (e.g., no connection).
-
-Purple color – initial data array filling.
-
-Green color – the device is ready for operation.
-
-Array Reset:
-
-When the button is pressed, the data array is reset, the LED changes to purple, and the scale with the message "Wait" reappears on the screen.
-
-Custom Characters:
-
-Custom characters are used on the LCD screen to display the scale and cursor.
-
-Customization
-Changing the array size: To analyze more or fewer data points, modify the array_size variable.
-
-Setting the anomaly threshold: You can adjust the logic for detecting anomalies by modifying the value range in the code.
-
-Changing the LCD address: If your LCD screen address differs from 0x27, change the I2C_ADDR variable.
-
-Customizing characters: You can modify or add your own characters by editing the arrays in the "Custom Character Creation" section.
-
-Use Cases
-Educational project: Learning about PIO, I2C, random number generation, and LCD screens.
-
-Data experiments: Analyzing random data and detecting anomalies.
-
-Prototyping: Rapid prototyping using Raspberry Pi Pico.
-
-License
-This project is distributed under the MIT license. You are free to use, modify, and distribute the code.
-
-Author
-Project developed by Alex Cube (drLexium).
-GitHub page: https://github.com/drlexium/statistical_anomaly_zone_finder
-
-Acknowledgments
-MicroPython developers for excellent support for Raspberry Pi Pico.
-
-Raspberry Pi community for inspiration and support.
-
-Links
-Official Raspberry Pi Pico website: https://www.raspberrypi.org/products/raspberry-pi-pico/
-
-MicroPython documentation: https://docs.micropython.org/
-
-<<<<<<< HEAD
-I2C LCD library: https://github.com/dhylands/python_lcd
-=======
-I2C LCD library: https://github.com/dhylands/python_lcd
->>>>>>> 3a74bc307db6dc31d11f6aa9c059b8b2a4236c0d
+Author:
+Alex Cube (drLexium)
+GitHub: https://github.com/drlexium/statistical_anomaly_zone_finder

@@ -60,7 +60,7 @@ seven_line = [0b00100, 0b11111, 0b11111, 0b11111, 0b11111, 0b11111, 0b11111, 0b0
 six_line = [0b00100, 0b01110, 0b01110, 0b01110, 0b01110, 0b01110, 0b00000, 0b00000]
 five_line = [0b00100, 0b01110, 0b01110, 0b01110, 0b01110, 0b00000, 0b00000, 0b00000]
 coursor = [0b00100, 0b01110, 0b11011, 0b10001, 0b10001, 0b11011, 0b01110, 0b00100]
-coursor_calk = [0b00100, 0b01110, 0b10001, 0b01101, 0b11111, 0b11111, 0b01110, 0b00100]
+coursor_calk = [0b00100, 0b01110, 0b10001, 0b10101, 0b10101, 0b11111, 0b01110, 0b00100]
 
 # Загрузка символов в LCD
 def init_custom_chars():
@@ -93,6 +93,16 @@ def draw_scale():
         else:
             lcd.putchar(chr(3))
 
+def clear_cursor(position):
+    """Очищает только курсор на указанной позиции (не затрагивая шкалу)"""
+    lcd.move_to(position, 0)
+    lcd.putchar(" ")
+
+def clear_wait_screen():
+    """Очищает надпись Wait, не затрагивая шкалу"""
+    lcd.move_to(6, 0)
+    lcd.putstr("    ")  # 4 пробела для очистки "Wait"
+
 def show_wait_screen():
     lcd.clear()
     lcd.move_to(6, 0)
@@ -100,7 +110,7 @@ def show_wait_screen():
     draw_scale()
 
 def show_position(position, is_deviation=False, show_letter=False, letter=""):
-    global stat_fullscreen
+    global stat_fullscreen, last_position
     
     if stat_fullscreen:
         # Режим полноэкранной статистики
@@ -118,14 +128,34 @@ def show_position(position, is_deviation=False, show_letter=False, letter=""):
             lcd.putstr("No data yet")
         return
     
-    # Обычный режим
-    lcd.clear()
+    # Обычный режим - обновляем только необходимые части экрана
+    if last_position == -1:
+        # Первое отображение - рисуем шкалу и очищаем "Wait"
+        clear_wait_screen()
+        draw_scale()
+    elif last_position != position:
+        # Очищаем предыдущую позицию курсора
+        clear_cursor(last_position)
+    
+    # Рисуем курсор на новой позиции
     lcd.move_to(position, 0)
     lcd.putchar(chr(5) if is_deviation else chr(4))
-    draw_scale()
+    
+    # Обновляем букву отклонения если нужно
     if show_letter:
         lcd.move_to(position, 1)
         lcd.putstr(letter)
+    
+    last_position = position
+
+def get_deviation_letter(position):
+    if position in {5,10}: return "E"
+    elif position in {4,11}: return "D"
+    elif position in {3,12}: return "C"
+    elif position in {2,13}: return "B"
+    elif position in {1,14}: return "A"
+    elif position in {0,15}: return "S"
+    return ""
 
 # Инициализация массива и статистики
 array_size = 1600
@@ -170,15 +200,6 @@ def reset_array():
     if lcd_connected:
         show_wait_screen()
     last_position = -1
-
-def get_deviation_letter(position):
-    if position in {5,10}: return "E"
-    elif position in {4,11}: return "D"
-    elif position in {3,12}: return "C"
-    elif position in {2,13}: return "B"
-    elif position in {1,14}: return "A"
-    elif position in {0,15}: return "S"
-    return ""
 
 def update_statistics(new_value):
     global value_counts, most_common_bin
@@ -240,6 +261,9 @@ while True:
         if data_array[-1] != 0:
             array_filled = True
             set_color(0, 50, 0)
+            if lcd_connected:
+                clear_wait_screen()
+                draw_scale()
     else:
         data_array.pop()
         data_array.insert(0, current_value)
@@ -261,7 +285,8 @@ while True:
             deviation_counter += 1
             current_deviation_letter = get_deviation_letter(position)
             
-            if deviation_counter >= 16000:
+            # Количество циклов до установления ранга
+            if deviation_counter >= 800:
                 show_deviation_letter = True
                 current_showing_letter = current_deviation_letter
         else:
@@ -272,11 +297,11 @@ while True:
         
         # Обновление дисплея
         if position != last_position or show_deviation_letter:
-            last_position = position
+            is_dev = position not in {6,7,8,9} and deviation_counter > 0
+            show_letter = show_deviation_letter or current_showing_letter
+            letter = current_showing_letter if current_showing_letter else current_deviation_letter
+            
             if lcd_connected:
-                is_dev = position not in {6,7,8,9} and deviation_counter > 0
-                show_letter = show_deviation_letter or current_showing_letter
-                letter = current_showing_letter if current_showing_letter else current_deviation_letter
                 show_position(position, is_dev, show_letter, letter)
     else:
         if last_position != -1:
